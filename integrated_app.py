@@ -478,17 +478,13 @@ def mode_jonghap():
 
     setup_tesseract()
     
-    # DB Check
-    db_path = "majors_db.csv"
+    # DB 로드
+    db_path = os.path.join(BASE_DIR, "recommand_majors", "majors_db.csv")
     if not os.path.exists(db_path):
-        st.warning(f"'{db_path}' 파일이 없습니다. 전공 데이터베이스가 필요합니다.")
-        uploaded_db = st.file_uploader("전공 DB (majors_db.csv) 업로드", type=["csv"])
-        if uploaded_db:
-            majors_df = pd.read_csv(uploaded_db)
-        else:
-            return
-    else:
-        majors_df = pd.read_csv(db_path)
+        st.error("전공 데이터베이스(majors_db.csv)를 찾을 수 없습니다.")
+        st.stop()
+
+    majors_df = pd.read_csv(db_path)
 
     if 'keywords' in majors_df.columns:
         majors_df['keywords'] = majors_df['keywords'].apply(lambda x: ast.literal_eval(x) if isinstance(x, str) and x.startswith('[') else [])
